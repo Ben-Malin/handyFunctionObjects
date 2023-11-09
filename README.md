@@ -28,7 +28,7 @@ simpleFoam -postProcess -latestTime -lib libhandyFuncs.so
 ### Function Objects
 #### SSTBlending
 
-The kOmegaSST turbulence model uses a blending function, to apply the $k-\omega$ model in the near wall region, and the $k-\epsilon$ model in the freestream.  
+The $k\omega SST$ turbulence model uses a blending function, to apply the $k-\omega$ model in the near wall region, and the $k-\epsilon$ model in the freestream.  
 Sometimes, it might be interesting or useful to actually know where this blending takes place.
 This function object simply writes out the F1 blending function that is used to select the model coefficients.
 
