@@ -84,6 +84,84 @@ Foam::functionObjects::SSTBlending::SSTBlending
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+Foam::tmp<Foam::volScalarField> Foam::functionObjects::SSTBlending::F1
+(
+    const volScalarField& rho,
+    const volScalarField& k,
+    const volScalarField& omega,
+    const volScalarField& mu,
+    const scalar alphaOmega2,
+    const scalar Cmu
+)
+{
+    volScalarField CDkOmega
+    (
+        (2*alphaOmega2)*(fvc::grad(k) & fvc::grad(omega))/omega
+    );
+
+    tmp<volScalarField> CDkOmegaPlus = max
+    (
+        CDkOmega,
+        dimensionedScalar("1.0e-10",dimless/sqr(dimTime),1.0e-10)
+    );
+
+    tmp<volScalarField> arg1 = min
+    (
+        min
+        (
+            max
+            (
+                (scalar(1)/scalar(Cmu))*sqrt(k)/(omega*y_),
+                scalar(500)*(mu/rho)/(sqr(y_)*omega)
+            ),
+            (4*alphaOmega2)*k/(CDkOmegaPlus*sqr(y_))
+        ),
+        scalar(10)
+    );
+    
+    return tanh(pow4(arg1));
+}
+
+Foam::tmp<Foam::volScalarField> Foam::functionObjects::SSTBlending::F1
+(
+    const volScalarField& k,
+    const volScalarField& omega,
+    const volScalarField& mu,
+    const scalar alphaOmega2,
+    const scalar Cmu
+)
+{
+    const dimensionedScalar rho("rho",dimDensity,1.0);
+
+    volScalarField CDkOmega
+    (
+        (2*alphaOmega2)*(fvc::grad(k) & fvc::grad(omega))/omega
+    );
+
+    tmp<volScalarField> CDkOmegaPlus = max
+    (
+        CDkOmega,
+        dimensionedScalar("1.0e-10",dimless/sqr(dimTime),1.0e-10)
+    );
+
+    tmp<volScalarField> arg1 = min
+    (
+        min
+        (
+            max
+            (
+                (scalar(1)/scalar(Cmu))*sqrt(k)/(omega*y_),
+                scalar(500)*(mu)/(sqr(y_)*omega)
+            ),
+            (4*alphaOmega2)*k/(CDkOmegaPlus*sqr(y_))
+        ),
+        scalar(10)
+    );
+    
+    return tanh(pow4(arg1));
+}
+
+
 bool Foam::functionObjects::SSTBlending::read(const dictionary& dict)
 {
     fvMeshFunctionObject::read(dict);
@@ -111,39 +189,22 @@ bool Foam::functionObjects::SSTBlending::execute()
 
     const volScalarField& k = turbModel->k();
     const volScalarField& omega = turbModel->omega();
-
-    const volScalarField& rho = mesh_.lookupObject<volScalarField>("rho");
-
+    const volScalarField& mu = turbModel->mu();
     const scalar alphaOmega2 = coeffDict.getOrDefault<scalar>("alphaOmega2", 0.856);
     const scalar Cmu = coeffDict.getOrDefault<scalar>("betaStar", 0.09);
  
-    volScalarField CDkOmega
-    (
-        (2*alphaOmega2)*(fvc::grad(k) & fvc::grad(omega))/omega
-    );
-
-    tmp<volScalarField> CDkOmegaPlus = max
-    (
-        CDkOmega,
-        dimensionedScalar("1.0e-10",dimless/sqr(dimTime),1.0e-10)
-    );
-
-    tmp<volScalarField> arg1 = min
-    (
-        min
-        (
-            max
-            (
-                (scalar(1)/scalar(Cmu))*sqrt(k)/(omega*y_),
-                scalar(500)*(turbModel->mu()/rho)/(sqr(y_)*omega)
-            ),
-            (4*alphaOmega2)*k/(CDkOmegaPlus*sqr(y_))
-        ),
-        scalar(10)
-    );
-
     volScalarField::Internal& blendI = SSTBlendField.ref();
-    blendI = tanh(pow4(arg1));
+
+    if (mesh_.foundObject<volScalarField>("rho"))
+    {
+        const volScalarField& rho = mesh_.lookupObject<volScalarField>("rho");
+        blendI = F1(rho, k, omega, mu, alphaOmega2, Cmu);
+    }
+    else
+    {
+        blendI = F1(k, omega, mu, alphaOmega2, Cmu);
+    }
+
     return true;
 }
 

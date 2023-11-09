@@ -98,6 +98,25 @@ public:
 
     // Member Functions
 
+        //- calculate F1
+        virtual tmp<volScalarField> F1
+        (
+            const volScalarField& rho,
+            const volScalarField& k,
+            const volScalarField& omega,
+            const volScalarField& mu,
+            const scalar alphaOmega2,
+            const scalar Cmu
+        );
+        virtual tmp<volScalarField> F1
+        (
+            const volScalarField& k,
+            const volScalarField& omega,
+            const volScalarField& mu,
+            const scalar alphaOmega2,
+            const scalar Cmu
+        );
+
         //- Read the SSTBlending data
         virtual bool read(const dictionary&);
 

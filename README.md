@@ -22,7 +22,7 @@ libs
 
 For postProcessing (note that objects which make use of a turbulence model require postProcess to be called through a solver):
 ```bash
-simpleFoam -postProcess -func SSTBlending -latestTime -lib libhandyFuncs.so
+simpleFoam -postProcess -latestTime -lib libhandyFuncs.so
 ```
 
 ### Function Objects
@@ -32,7 +32,7 @@ The kOmegaSST turbulence model uses a blending function, to apply the $k-\omega$
 Sometimes, it might be interesting or useful to actually know where this blending takes place.
 This function object simply writes out the F1 blending function that is used to select the model coefficients.
 
-Once installed, the functionObject can be run after the simulation using the above postProcess command, or by including the following in the functions section of controlDict:
+Once installed, add the following to the functions section of your controlDict:
 
 ```c++
 functions
@@ -46,3 +46,6 @@ functions
     }
 }
 ```
+
+And the blending field will be saved during your simulation.
+If you want to output the field for a simulation you've already run, you can use the simpleFoam -postProcess command as above
