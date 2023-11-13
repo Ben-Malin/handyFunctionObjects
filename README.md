@@ -39,13 +39,35 @@ functions
 {
     sstBlending
     {
-        type SSTBlending;
-        libs ("libhandyFuncs.so")
-        executeControl writeTime;
-        writeControl   writeTime;
+        type            SSTBlending;
+        libs            ("libhandyFuncs.so")
+        executeControl  writeTime;
+        writeControl    writeTime;
     }
 }
 ```
 
 And the blending field will be saved during your simulation.
 If you want to output the field for a simulation you've already run, you can use the simpleFoam -postProcess command as above
+
+#### obLength
+
+Function object to calculate the Obukhov length.
+Only calculates at walls, doesn't bother to try calculating it throughout the field.
+
+I've tried to keep it a bit more general than the functionObject in src/atmosphericModels
+Enables use of arbitrary T field (so a potential/virtual temperature field can be used instead) and doesn't use the buoyant generation term for the calculation.
+
+```c++
+functions
+{
+    obLength
+    {
+        type            obLength;
+        libs            ("libhandyFuncs.so")
+        Tname           Tpot;
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
+}
+```

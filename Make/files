@@ -1,4 +1,7 @@
 /* Make function objects */
+
 SSTBlending/SSTBlending.C
+obLength/obLength.C
+
 
 LIB = $(FOAM_USER_LIBBIN)/libhandyFuncs
