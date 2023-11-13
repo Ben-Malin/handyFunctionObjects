@@ -52,11 +52,11 @@ If you want to output the field for a simulation you've already run, you can use
 
 #### obLength
 
-Function object to calculate the Obukhov length.
-Only calculates at walls, doesn't bother to try calculating it throughout the field.
+Function object to calculate the Obukhov length.  
+Only calculates at walls, doesn't bother to try calculating it throughout the field.  
 
-I've tried to keep it a bit more general than the functionObject in src/atmosphericModels
-Enables use of arbitrary T field (so a potential/virtual temperature field can be used instead) and doesn't use the buoyant generation term for the calculation.
+I've tried to keep it a bit more general than the functionObject in src/atmosphericModels  
+Enables use of arbitrary T field (so a potential/virtual temperature field can be used instead) and doesn't use the buoyant generation term for the calculation.  
 
 ```c++
 functions
@@ -71,3 +71,14 @@ functions
     }
 }
 ```
+The Obukhov length calculated as:
+
+$$
+L = \frac{-U_*^3 \cdot \theta_v}{\kappa \cdot g \cdot \overline{w' \theta_v '}}
+$$
+
+The friction velocity $U_*$ is calculated as $\sqrt{\tau_{wall}}$, while the kinematic heat flux is calculated as:
+
+$$
+\overline{w'\theta_v'} = \frac{\alpha_t}{\rho} \cdot \frac{\partial \theta}{\partial z}
+$$
