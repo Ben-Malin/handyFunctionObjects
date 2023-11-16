@@ -32,7 +32,6 @@ License
 #include "surfaceInterpolate.H"
 #include "fvcSnGrad.H"
 #include "wallPolyPatch.H"
-#include "turbulentFluidThermoModel.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -79,20 +78,21 @@ void Foam::functionObjects::obLength::calcObLength
 
     for (const label patchi : patchSet_)
     {
-        Info << "patch " << patchi << endl;
-        Info << "name " << mesh_.boundary()[patchi].name() << endl;
-
         const vectorField& Sfp = mesh_.Sf().boundaryField()[patchi];
         const scalarField& magSfp = mesh_.magSf().boundaryField()[patchi];
         const symmTensorField& Reffp = Reff.boundaryField()[patchi];
+        const scalarField& rhop = rhoBf[patchi];
 
         const scalarField& gTgradp = gTgrad->boundaryField()[patchi];
 
-        const scalarField Ustar = Foam::pow(mag((-Sfp/magSfp)&Reffp),0.5);
+        const scalarField Ustar = Foam::pow(mag((-Sfp/magSfp)&Reffp)/rhop,0.5);
+
+        // Obukhov length is based on kinematic heat flux, which is q/(rho*Cp)
+        // kappa / Cp = alpha
 
         obLengthBf[patchi] = 
             (Foam::pow(Ustar,3) * Twall[patchi]) 
-            / (SMALL +  (alphaBf[patchi]/rhoBf[patchi]) * gTgradp * kappa_);
+            / (SMALL +  (alphaBf[patchi]/rhop) * gTgradp * kappa_);
     }
 }
 
