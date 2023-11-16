@@ -40,7 +40,7 @@ functions
     sstBlending
     {
         type            SSTBlending;
-        libs            ("libhandyFuncs.so")
+        libs            ("libhandyFuncs.so");
         executeControl  writeTime;
         writeControl    writeTime;
     }
@@ -64,7 +64,7 @@ functions
     obLength
     {
         type            obLength;
-        libs            ("libhandyFuncs.so")
+        libs            ("libhandyFuncs.so");
         Tname           Tpot;
         executeControl  writeTime;
         writeControl    writeTime;
