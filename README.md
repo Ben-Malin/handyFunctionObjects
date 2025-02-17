@@ -50,6 +50,28 @@ functions
 And the blending field will be saved during your simulation.
 If you want to output the field for a simulation you've already run, you can use the simpleFoam -postProcess command as above
 
+#### turbulenceBudget
+Outputs the terms in the TKE equation.  
+Note that B uses a potential temperature field (as I use this for ABL modelling) - would require modification to work with more general buoyant flows  
+G: Shear production  
+B: Buoyant production
+D: Diffusion
+epsilon: Dissipation
+
+```c++
+functions
+{
+    turbBudget
+    {
+        type    turbulenceBudget;
+        libs ("libhandyFuncs.so");
+        executeControl  writeTime;
+        writeControl    writeTime;
+        fields (G D epsilon); // (G B D epsilon)
+    }
+}
+```
+
 #### obLength
 
 Function object to calculate the Obukhov length.  

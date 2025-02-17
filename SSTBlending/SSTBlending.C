@@ -187,6 +187,15 @@ bool Foam::functionObjects::SSTBlending::execute()
 
     const dictionary& coeffDict = turbModel->coeffDict();
 
+    // check if running ke or kw
+    tmp<volScalarField> tepsilon = turbModel->epsilon();
+    if (!tepsilon.isTmp())
+    {
+        Info << "Detected KE model, not executing SSTBlending" << endl;
+        return true;
+    }
+
+
     const volScalarField& k = turbModel->k();
     const volScalarField& omega = turbModel->omega();
     const volScalarField& mu = turbModel->mu();
@@ -204,6 +213,8 @@ bool Foam::functionObjects::SSTBlending::execute()
     {
         blendI = F1(k, omega, mu, alphaOmega2, Cmu);
     }
+
+    SSTBlendField.correctBoundaryConditions();
 
     return true;
 }

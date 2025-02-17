@@ -2,6 +2,7 @@
 
 SSTBlending/SSTBlending.C
 obLength/obLength.C
+turbulenceBudget/turbulenceBudget.C
 
 
 LIB = $(FOAM_USER_LIBBIN)/libhandyFuncs
